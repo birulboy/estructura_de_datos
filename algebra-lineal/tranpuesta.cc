@@ -7,30 +7,30 @@ using Matrix = vector<vector<int>>;
 
 // Transpuesta de una matriz
 Matrix transpose(const Matrix &A) {
-    int rows = A.size(), cols = A[0].size();
-    Matrix T(cols, vector<int>(rows));
+    int rows = A.size(), cols = A[0].size(); // Sacamos filas y columnas ( Asumimos que todas las filas tienen la misma longitud )
+    Matrix T(cols, vector<int>(rows)); // Inicializamos la matriz transpuesta
     for (int i = 0; i < rows; ++i)
         for (int j = 0; j < cols; ++j)
-            T[j][i] = A[i][j];
+            T[j][i] = A[i][j]; // Asignamos el valor de la matriz original ( invertida ) a la transpuesta
     return T;
 }
 
-// Multiplicación estándar (entera) de matrices
+// Multiplicación estándar (int) de matrices
 Matrix multiply(const Matrix &A, const Matrix &B) {
-    int n = A.size(), m = B[0].size(), p = B.size();
-    Matrix R(n, vector<int>(m, 0));
-    for (int i = 0; i < n; ++i)
-        for (int j = 0; j < m; ++j)
-            for (int k = 0; k < p; ++k)
-                R[i][j] += A[i][k] * B[k][j];
+    int n = A.size(), m = B[0].size(), p = B.size(); // Sacamos filas y columnas de A y B
+    Matrix R(n, vector<int>(m, 0)); // Inicializamos la matriz resultado
+    for (int i = 0; i < n; ++i) // Recorremos filas de A
+        for (int j = 0; j < m; ++j)// Recorremos columnas de B
+            for (int k = 0; k < p; ++k) // Recorremos las filas de B
+                R[i][j] += A[i][k] * B[k][j]; // Multiplicamos la fila i de A por la columna j de B
     return R;
 }
 
 // Imprimir matriz
 void print_matrix(const Matrix &M, const string &label) {
     cout << "\nMatriz " << label << ":\n";
-    for (const auto& row : M) {
-        for (int val : row)
+    for (const auto& row : M) { // Recorremos cada fila
+        for (int val : row) // Recorremos cada valor de la fila
             cout << val << " ";
         cout << endl;
     }
