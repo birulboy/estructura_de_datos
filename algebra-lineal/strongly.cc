@@ -90,7 +90,7 @@ void print_matrix(const Matrix &M, const string &name) {
 }
 
 int main() {
-    // Ejemplo: grafo dirigido con 6 nodos
+    // Ejemplo: grafo dirigido con 8 nodos
    Matrix A = {
     {0, 1, 0, 0, 0, 0, 0, 0},
     {0, 0, 1, 0, 1, 1, 0, 0},
