@@ -1,19 +1,19 @@
 #include <iostream>
 #include <vector>
-#include <stdexcept>
+#include <stdexcept> // For invalid_argument
 #include <limits>
 
+
 using namespace std;
-
 typedef vector<vector<double>> Matrix;
-const double m = numeric_limits<double>::max(); // Representación de infinito
+const double m = numeric_limits<double>::max();
 
-// Imprimir matriz
+// Function to print a matrix
 void printMatrix(const Matrix& mat) {
     for (const auto& row : mat) {
         for (double val : row) {
             if (val == m)
-                cout << "∞\t"; // Mostrar infinito de forma clara
+                cout << "∞\t";
             else
                 cout << val << "\t";
         }
@@ -21,28 +21,45 @@ void printMatrix(const Matrix& mat) {
     }
 }
 
-// Multiplicación de matrices en el semianillo (min, +)
-Matrix multiplyMatrices(const Matrix& A, const Matrix& B) {
-    if (A.empty() || B.empty() || A[0].empty() || B[0].empty())
-        throw invalid_argument("Las matrices no pueden estar vacías.");
+
+// Function to perform matrix multiplication
+Matrix multiplyMatrices(
+    const Matrix& A,
+    const Matrix& B) {
+    // Get dimensions of matrices
+    if (A.empty() || B.empty() || A[0].empty() || B[0].empty()) {
+        throw invalid_argument("Input matrices cannot be empty.");
+    }
 
     int rowsA = A.size();
     int colsA = A[0].size();
     int rowsB = B.size();
     int colsB = B[0].size();
 
-    if (colsA != rowsB)
-        throw invalid_argument("Dimensiones incompatibles para multiplicación.");
+    // Check if multiplication is possible
+    // Number of columns in A must be equal to the number of rows in B
+    if (colsA != rowsB) {
+        throw invalid_argument(
+            "Number of columns in the first matrix must be equal to the "
+            "number of rows in the second matrix for multiplication.");
+    }
 
+    // Initialize the result matrix C with zeros
+    // The dimensions of C will be rowsA x colsB
     Matrix C(rowsA, vector<double>(colsB, m));
 
-    for (int i = 0; i < rowsA; ++i) {
-        for (int j = 0; j < colsB; ++j) {
-            for (int k = 0; k < colsA; ++k) {
-                if (A[i][k] != m && B[k][j] != m) {
-                    C[i][j] = min(C[i][j], A[i][k] + B[k][j]);
-                }
+    // Perform multiplication
+    for (int i = 0; i < rowsA; ++i) {        // Iterate over rows of A
+        for (int j = 0; j < colsB; ++j) {    // Iterate over columns of B
+            double minim = A[i][j];
+            for (int k = 0; k < colsA; ++k) { // Iterate over columns of A / rows of B
+                //cout << "(" << i << "," << j << ")" << " k: " << k << " a(i,k) " << A[i][k] << " a(k,j) " << B[k][j] << endl;
+                if ( A[i][k] != m && B[k][j] != m )
+                minim = min(minim,  (A[i][k] + B[k][j]));
             }
+            if ( i == j ) {
+                 C[i][j] = 0;
+            } else C[i][j] = minim;
         }
     }
 
@@ -50,34 +67,26 @@ Matrix multiplyMatrices(const Matrix& A, const Matrix& B) {
 }
 
 int main() {
-    // Matriz de adyacencia del grafo
+   
+    // Example Matrices
     Matrix A = {
         {m, 2, 1, m, 3},
         {m, m, m, 4, m},
         {m, 1, m, m, 1},
         {1, m, 3, m, 5},
         {m, m, m, m, m}
-    };
+    }; // 2x3 matrix
 
-    cout << "Matriz original A:" << endl;
+
+    cout << "Graph:" << endl;
     printMatrix(A);
-
-    Matrix power = A;
-    Matrix result = A;
-
-    int maxPower = 4; // Máxima longitud de camino a considerar
-
-    for (int i = 1; i < maxPower; ++i) {
-        power = multiplyMatrices(power, A);
-        for (int r = 0; r < result.size(); ++r) {
-            for (int c = 0; c < result[0].size(); ++c) {
-                result[r][c] = min(result[r][c], power[r][c]);
-            }
-        }
+   
+    Matrix Ai = A;
+    for (int i = 1; i < 4; i++) {
+        Ai = multiplyMatrices(Ai, A);
+        cout << "\nResult of A :-) " << i << ": " << endl;
+        printMatrix(Ai);
     }
-
-    cout << "\nCaminos mínimos acumulados (hasta longitud " << maxPower << "):" << endl;
-    printMatrix(result);
 
     return 0;
 }
